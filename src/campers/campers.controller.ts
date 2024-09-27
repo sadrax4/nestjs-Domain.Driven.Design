@@ -1,7 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CamperDto } from './camper.dto';
 import { CampersQuery } from './queries/camper.query';
+import { CreateCamperRequest } from './dto/request/create-camper-request.dto';
+import { CreateCamperCommand } from './command/create-camper/create.camper.command';
 
 @Controller('campers')
 export class CampersController {
@@ -22,4 +24,13 @@ export class CampersController {
         );
     }
 
+    @Post()
+    async createCamper(
+      @Body() createCamperRequest: CreateCamperRequest,
+    ): Promise<void> {
+      await this.commandBus.execute<CreateCamperCommand, void>(
+        new CreateCamperCommand(createCamperRequest),
+      );
+    }
+  
 }
